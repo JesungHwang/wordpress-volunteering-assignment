@@ -8,7 +8,7 @@
 function myPlugin_Activate(){
     global $wpdb;
     $wpdb -> query("CREATE TABLE opportunities (
-    id INT AUTO_INCREMENT,
+    id INT NOT NULL AUTO_INCREMENT,
     position VARCHAR(255),
     organization VARCHAR(255),
     type VARCHAR(50),
@@ -40,3 +40,38 @@ register_activation_hook( __FILE__, 'myPlugin_Activate' );
  }
 
  register_deactivation_hook(__FILE__, "myPlugin_Deactivate");
+
+ function wp_opportunities_adminpage_html() {
+// check user capabilities
+if ( ! current_user_can( 'manage_options' ) ) {
+return;
+}
+?>
+<div class="wrap">
+<h1><?php esc_html( get_admin_page_title() ); ?></h1>
+<form action="<?php admin_url('options-general.php?page=events/events.php')?>"
+method="post">
+<label for="someinput">Some Input</label>
+<input type="text" name="someinput">
+<input type="submit">
+</form>
+<p><a href="<?php admin_url('options-
+general.php?page=events/events.php')?>?page=events&amp;somekey=somevalue">my link
+action</a></p>
+<p>POST array: <?php var_dump($_POST) ?></p>
+<p>GET array: <?php var_dump($_GET) ?></p>
+</div>
+<?php
+}
+function wp_opportunities_adminpage() {
+add_menu_page(
+'opportunities',
+'opportunities',
+'manage_options',
+'opportunities',
+'wp_opportunities_adminpage_html',
+'', // could give a custom icon here
+20
+);
+}
+add_action( 'admin_menu', 'wp_opportunities_adminpage' );
