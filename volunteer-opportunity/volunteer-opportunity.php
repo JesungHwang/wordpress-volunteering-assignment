@@ -1,33 +1,34 @@
 <?php
 /**
  * Plugin Name: Volunteer Opportunity
- * Description: Assignment Plugin for Wordpress
+ * Description: Volunteering plugin that gives users the Admin the ability to add and delete volunteering opportunities.
  * Author: Jesung Hwang
  */
 
 function myPlugin_Activate(){
     global $wpdb;
     $wpdb -> query("CREATE TABLE opportunities (
-    id INT NOT NULL AUTO_INCREMENT,
-    position VARCHAR(255),
+    id           INT NOT NULL AUTO_INCREMENT,
+    position     VARCHAR(255),
     organization VARCHAR(255),
-    type VARCHAR(50),
-    email VARCHAR(100),
-    description TEXT,
-    location VARCHAR(255),
-    hours INT,
-    skills VARCHAR(255),
-    PRIMARY KEY (id)
+    type         VARCHAR(50),
+    email        VARCHAR(100),
+    description  TEXT,
+    location     VARCHAR(255),
+    hours        INT,
+    skills       VARCHAR(255),
+    PRIMARY KEY  (id)
     );");
 
-    $wpdb -> query("INSERT INTO opportunities (position) VALUES('test-poisiton')");
-    $wpdb -> query("INSERT INTO opportunities (organization) VALUES('test-organization')");
-    $wpdb -> query("INSERT INTO opportunities (type) VALUES('test-opportunities')");
-    $wpdb -> query("INSERT INTO opportunities (email) VALUES('test-email')");
-    $wpdb -> query("INSERT INTO opportunities (description) VALUES('test-descriptions')");
-    $wpdb -> query("INSERT INTO opportunities (location) VALUES('test-location')");
-    $wpdb -> query("INSERT INTO opportunities (hours) VALUES('9999')");
-    $wpdb -> query("INSERT INTO opportunities (skills) VALUES('test-skills')");
+    $wpdb -> query("INSERT INTO opportunities (position, organization, type, email, description, location, hours, skills) 
+                    VALUES('test-positon',
+                           'test-organizaion',
+                           'test-type',
+                           'test-email',
+                           'test-description',
+                           'test-location',
+                           '9999',
+                           'test-skills')");
 }
 
 register_activation_hook( __FILE__, 'myPlugin_Activate' );
@@ -39,39 +40,71 @@ register_activation_hook( __FILE__, 'myPlugin_Activate' );
     $wpdb->query("DROP TABLE opportunities");
  }
 
- register_deactivation_hook(__FILE__, "myPlugin_Deactivate");
+register_deactivation_hook(__FILE__, "myPlugin_Deactivate");
 
- function wp_opportunities_adminpage_html() {
-// check user capabilities
-if ( ! current_user_can( 'manage_options' ) ) {
-return;
-}
-?>
-<div class="wrap">
-<h1><?php esc_html( get_admin_page_title() ); ?></h1>
-<form action="<?php admin_url('options-general.php?page=events/events.php')?>"
-method="post">
-<label for="someinput">Some Input</label>
-<input type="text" name="someinput">
-<input type="submit">
-</form>
-<p><a href="<?php admin_url('options-
-general.php?page=events/events.php')?>?page=events&amp;somekey=somevalue">my link
-action</a></p>
-<p>POST array: <?php var_dump($_POST) ?></p>
-<p>GET array: <?php var_dump($_GET) ?></p>
-</div>
+function wp_opportunities_adminpage_html() {
+    global $wpdb;
+    $table = 'opportunities';
+
+    if (isset($_GET['delete'])) {
+        $wpdb->delete($table, ['id' => intval($_GET['delete'])]);
+    }
+
+    if (isset($_POST['create_opportunity'])) {
+        if (
+            !empty($_POST['position']) &&
+            !empty($_POST['organization']) &&
+            is_numeric($_POST['hours'])
+        ) {
+            $wpdb->insert($table, [
+                'position'     => sanitize_text_field($_POST['position']),
+                'organization' => sanitize_text_field($_POST['organization']),
+                'type'         => sanitize_text_field($_POST['type']),
+                'email'        => sanitize_text_field($_POST['email']),
+                'description'  => sanitize_text_field($_POST['description']),
+                'location'     => sanitize_text_field($_POST['location']),
+                'hours'        => intval($_POST['hours']),
+                'skills'       => sanitize_text_field($_POST['skills'])
+            ]);
+        }
+    }
+
+    ?>
+    <div class="wrap">
+        <h1>Volunteer Opportunities</h1>
+
+        <h2>Add Opportunity</h2>
+        <form method="post">
+            <input name="position" placeholder="Position" required><br><br>
+            <input name="organization" placeholder="Organization" required><br><br>
+
+            <select name="type">
+                <option value="temporary">Temperory</option>
+                <option value="recurring">Recurring</option>
+                <option value="seasonal">Seasonal</option>
+            </select><br><br>
+
+            <input type="email" name="email" placeholder="Email"><br><br>
+            <input name="location" placeholder="Location"><br><br>
+            <input type="number" name="hours" placeholder="Hours" required><br><br>
+            <input name="skills" placeholder="Skills (comma-separated)"><br><br>
+            <textarea name="description" placeholder="Description"></textarea><br><br>
+
+            <button name="create_opportunity">Add Opportunity</button>
+        </form>
+    </div>
 <?php
 }
+
 function wp_opportunities_adminpage() {
-add_menu_page(
-'opportunities',
-'opportunities',
-'manage_options',
-'opportunities',
-'wp_opportunities_adminpage_html',
-'', // could give a custom icon here
-20
-);
+    add_menu_page(
+        'Volunteer',
+        'Volunteer',
+        'manage_options',
+        'opportunities',
+        'wp_opportunities_adminpage_html',
+        '',
+        20
+    );
 }
 add_action( 'admin_menu', 'wp_opportunities_adminpage' );
