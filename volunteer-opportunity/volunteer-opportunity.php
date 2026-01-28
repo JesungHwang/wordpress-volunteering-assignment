@@ -1,13 +1,13 @@
 <?php
 /**
- * Plugin Name: Volunteer Opportunity
+ * Plugin Name: Volunteer Opportunity Plugin
  * Description: Volunteering plugin that gives users the Admin the ability to add and delete volunteering opportunities.
  * Author: Jesung Hwang
  */
 
 function myPlugin_Activate(){
     global $wpdb;
-    $wpdb -> query("CREATE TABLE opportunities (
+    $wpdb -> query("CREATE TABLE IF NOT EXISTS opportunities (
     id           INT NOT NULL AUTO_INCREMENT,
     position     VARCHAR(255),
     organization VARCHAR(255),
@@ -108,3 +108,38 @@ function wp_opportunities_adminpage() {
     );
 }
 add_action( 'admin_menu', 'wp_opportunities_adminpage' );
+
+function volunteer_short_code(){
+    global $wpdb;
+
+    $table = 'opportunities';
+    $results = $wpdb->get_results("SELECT * from $table");
+
+    $html_table = '<table>
+                   <tr>
+                      <th>ID</th>
+                      <th>Position</th>
+                      <th>Organization</th>
+                      <th>Type</th>
+                      <th>Email</th>
+                      <th>Description</th>
+                      <th>Location</th>
+                      <th>Hours</th>
+                      <th>Skills</th>';
+    foreach($results as $rows){
+        $html_table .= '<tr>
+                            <td>'. esc_html ($rows->id) .'</td>
+                            <td>'. esc_html ($rows->position) .'</td>
+                            <td>'. esc_html ($rows->organization).'</td>
+                            <td>'. esc_html ($rows->type) .'</td>
+                            <td>'. esc_html ($rows->email) .'</td>
+                            <td>'. esc_html ($rows->description).'</td>
+                            <td>'. esc_html ($rows->location).'</td>
+                            <td>'. esc_html ($rows->hours).'</td>
+                            <td>'. esc_html ($rows->skills).'</td>
+                        </tr>';
+    }
+    $html_table .= '</table>';
+    return $html_table;
+}
+add_shortcode('volunteer', 'volunteer_short_code');
