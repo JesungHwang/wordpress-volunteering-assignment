@@ -7,7 +7,8 @@
 
 function myPlugin_Activate(){
     global $wpdb;
-    $wpdb -> query("CREATE TABLE IF NOT EXISTS opportunities (
+    $wpdb->query("DROP TABLE IF EXISTS $table");
+    $wpdb->query("CREATE TABLE opportunities (
     id           INT NOT NULL AUTO_INCREMENT,
     position     VARCHAR(255),
     organization VARCHAR(255),
@@ -21,14 +22,32 @@ function myPlugin_Activate(){
     );");
 
     $wpdb -> query("INSERT INTO opportunities (position, organization, type, email, description, location, hours, skills) 
-                    VALUES('test-positon',
-                           'test-organizaion',
-                           'test-type',
-                           'test-email',
-                           'test-description',
-                           'test-location',
-                           '9999',
-                           'test-skills')");
+                    VALUES('Indigenous Event Labourer',
+                           'Indigenous Voice',
+                           'Temporary',
+                           'IndigenousVoice@Gmail.com',
+                           'Need a labourer assistent to help set up the stalls and tables.',
+                           'Markham',
+                           '8',
+                           'Strength, Independence')");
+    $wpdb -> query("INSERT INTO opportunities (position, organization, type, email, description, location, hours, skills) 
+                    VALUES('Wellness Program Co-ordinator',
+                           'Global Womenhood',
+                           'Seasonal',
+                           'GlobWomen@Hotmail.com',
+                           'Lead classes/sessions of yoga, pilates and zumba. Massage and reiki therapists welcome.',
+                           'Emmanuel House',
+                           '16',
+                           'Teaching, Listening, Cooperative, Sympathetic')");
+    $wpdb -> query("INSERT INTO opportunities (position, organization, type, email, description, location, hours, skills) 
+                    VALUES('YWCA IT Administrator',
+                           'YWCA Burlington Branch',
+                           'Recurring',
+                           'YWCABurlington@Gmail.com',
+                           'Use skills to make an impact through supporting administrative area of our organization. Resposnsibilities include: IT, Communications, and Finance.',
+                           'YWCA Centre of Burlington',
+                           '200',
+                           'Self-reliant, Competent, Tech, Degree')");
 }
 
 register_activation_hook( __FILE__, 'myPlugin_Activate' );
@@ -79,7 +98,7 @@ function wp_opportunities_adminpage_html() {
             <input name="organization" placeholder="Organization" required><br><br>
 
             <select name="type">
-                <option value="temporary">Temperory</option>
+                <option value="temporary">Temporary</option>
                 <option value="recurring">Recurring</option>
                 <option value="seasonal">Seasonal</option>
             </select><br><br>
@@ -117,26 +136,24 @@ function volunteer_short_code(){
 
     $html_table = '<table>
                    <tr>
-                      <th>ID</th>
-                      <th>Position</th>
-                      <th>Organization</th>
-                      <th>Type</th>
-                      <th>Email</th>
-                      <th>Description</th>
-                      <th>Location</th>
-                      <th>Hours</th>
-                      <th>Skills</th>';
+                      <th> Position </th>
+                      <th> Organization </th>
+                      <th> Type </th>
+                      <th> Email </th>
+                      <th> Description </th>
+                      <th> Location </th>
+                      <th> Hours </th>
+                      <th> Skills </th>';
     foreach($results as $rows){
         $html_table .= '<tr>
-                            <td>'. esc_html ($rows->id) .'</td>
                             <td>'. esc_html ($rows->position) .'</td>
-                            <td>'. esc_html ($rows->organization).'</td>
+                            <td>'. esc_html ($rows->organization) .'</td>
                             <td>'. esc_html ($rows->type) .'</td>
                             <td>'. esc_html ($rows->email) .'</td>
-                            <td>'. esc_html ($rows->description).'</td>
-                            <td>'. esc_html ($rows->location).'</td>
-                            <td>'. esc_html ($rows->hours).'</td>
-                            <td>'. esc_html ($rows->skills).'</td>
+                            <td>'. esc_html ($rows->description) .'</td>
+                            <td>'. esc_html ($rows->location) .'</td>
+                            <td>'. esc_html ($rows->hours) .'</td>
+                            <td>'. esc_html ($rows->skills) .'</td>
                         </tr>';
     }
     $html_table .= '</table>';
