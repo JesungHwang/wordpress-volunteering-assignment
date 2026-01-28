@@ -7,6 +7,7 @@
 
 function myPlugin_Activate(){
     global $wpdb;
+    $table = 'opportunities';
     $wpdb->query("DROP TABLE IF EXISTS $table");
     $wpdb->query("CREATE TABLE opportunities (
     id           INT NOT NULL AUTO_INCREMENT,
