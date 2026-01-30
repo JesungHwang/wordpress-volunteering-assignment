@@ -59,7 +59,6 @@ register_activation_hook( __FILE__, 'myPlugin_Activate' );
 
     $wpdb->query("DROP TABLE opportunities");
  }
-
 register_deactivation_hook(__FILE__, "myPlugin_Deactivate");
 
 function wp_opportunities_adminpage_html() {
@@ -146,15 +145,23 @@ function volunteer_short_code(){
                       <th> Hours </th>
                       <th> Skills </th>';
     foreach($results as $rows){
-        $html_table .= '<tr>
-                            <td>'. esc_html ($rows->position) .'</td>
-                            <td>'. esc_html ($rows->organization) .'</td>
-                            <td>'. esc_html ($rows->type) .'</td>
-                            <td>'. esc_html ($rows->email) .'</td>
-                            <td>'. esc_html ($rows->description) .'</td>
-                            <td>'. esc_html ($rows->location) .'</td>
-                            <td>'. esc_html ($rows->hours) .'</td>
-                            <td>'. esc_html ($rows->skills) .'</td>
+        if($rows->hours < 10){
+            $html_table .= '<tr style="background-color: green;">';
+        } elseif($rows->hours >= 10 && $rows->hours < 100){
+            $html_table .= '<tr style="background-color: yellow;">';
+        } elseif($rows->hours > 100){
+            $html_table .= '<tr style="background-color: red";>';
+        } else {
+            $html_table .- '<tr>';
+        }
+        $html_table .= '<td>'. esc_html ($rows->position) .'</td>
+                        <td>'. esc_html ($rows->organization) .'</td>
+                        <td>'. esc_html ($rows->type) .'</td>
+                        <td>'. esc_html ($rows->email) .'</td>
+                        <td>'. esc_html ($rows->description) .'</td>
+                        <td>'. esc_html ($rows->location) .'</td>
+                        <td>'. esc_html ($rows->hours) .'</td>
+                        <td>'. esc_html ($rows->skills) .'</td>
                         </tr>';
     }
     $html_table .= '</table>';
