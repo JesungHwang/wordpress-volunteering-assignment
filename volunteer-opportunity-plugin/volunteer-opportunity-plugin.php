@@ -112,6 +112,36 @@ function wp_opportunities_adminpage_html() {
             <button name="create_opportunity">Add Opportunity</button>
         </form>
     </div>
+    <?php
+    $results = $wpdb->get_results("SELECT * from $table");
+    
+    $html_table = '<table>
+            <tr>
+                <th> Position </th>
+                <th> Organization </th>
+                <th> Type </th>
+                <th> Email </th>
+                <th> Description </th>
+                <th> Location </th>
+                <th> Hours </th>
+                <th> Skills </th>
+                <th> Delete </th>';
+    foreach ($results as $rows) {
+        $html_table .= '<tr>
+                        <td>'. esc_html ($rows->position) .'</td>
+                        <td>'. esc_html ($rows->organization) .'</td>
+                        <td>'. esc_html ($rows->type) .'</td>
+                        <td>'. esc_html ($rows->email) .'</td>
+                        <td>'. esc_html ($rows->description) .'</td>
+                        <td>'. esc_html ($rows->location) .'</td>
+                        <td>'. esc_html ($rows->hours) .'</td>
+                        <td>'. esc_html ($rows->skills) .'</td>
+                        <td><a href="?page=opportunities&delete='. intval($rows->id) .'">Delete</a></td>
+                        </tr>';
+    }
+    $html_table .= '</table>';
+    echo $html_table;
+    ?>
 <?php
 }
 
@@ -152,7 +182,7 @@ function volunteer_short_code(){
         } elseif($rows->hours > 100){
             $html_table .= '<tr style="background-color: red";>';
         } else {
-            $html_table .- '<tr>';
+            $html_table .= '<tr>';
         }
         $html_table .= '<td>'. esc_html ($rows->position) .'</td>
                         <td>'. esc_html ($rows->organization) .'</td>
